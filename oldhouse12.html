@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>國小社會：傳統住屋</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fade-in 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-amber-50 font-sans text-gray-800">
+
+  <header class="bg-amber-600 text-white p-6 shadow-md text-center">
+    <h1 class="text-3xl md:text-4xl font-bold mb-2 flex items-center justify-center gap-3">
+      <span>🏕️</span> 國小社會：傳統住屋
+    </h1>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-4 md:p-6">
+
+    <div id="tabs-container" class="flex flex-wrap gap-2 justify-center mb-8">
+    </div>
+
+    <div id="content-wrapper" class="rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-500 bg-white relative">
+    </div>
+
+  </main>
+
+  <script>
+    // --- 資料庫：將心智圖完整轉換為結構化資料 (已統整為 4 大類) ---
+    const lessonData = [
+      {
+        id: 1,
+        title: "一、原住民族的傳統住屋",
+        icon: "🛖",
+        color: "bg-green-100 text-green-800",
+        btnColor: "bg-green-500 hover:bg-green-600",
+        items: [
+          {
+            name: "干欄式住屋",
+            desc: "早期原住民族為適應山區或沿海潮溼環境所建的房屋形式。",
+            image: "<img src='a7.干欄式小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "架高設計", detail: "因為要適應潮溼環境，防止淹水與野生動物侵擾，所以將房屋底座架高。優點是通風良好，缺點是遇颱風易損壞。",
+                image: "<img src='a7.干欄式小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "天然建材", detail: "主要使用木頭、竹子與茅草。茅草是常見草本植物，因取得容易且具防水性，常作為屋頂建材。",
+                image: "<img src='a8.干欄建材小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "十三行遺址", detail: "史前人類的十三行遺址出土許多「柱洞」遺跡，推測當時已建造干欄式住屋。",
+                image: "<img src='a9.十三行小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "原住民住屋特色",
+            desc: "原住民族的房屋設計充滿了對大自然的智慧喔！",
+            image: "<img src='a1.原住民住屋小.png' class='h-full w-full object-cover'>",
+            terms: [
+              { name: "就地取材", detail: "指使用自然環境中的材料（如石板、木頭、竹子、茅草等）進行房屋搭建的傳統住屋特色。" },
+              { name: "獨具特色的建築形式", detail: "指不同的原住民族群，為了適應各自所在的自然環境所發展出的各異建築。" }
+            ]
+          },
+          {
+            name: "石板屋 (排灣族、魯凱族)",
+            desc: "利用大小石板交錯堆疊築成的建築。",
+            image: "<img src='a2.排灣魯凱小.png' class='h-full w-full object-cover'>",
+            terms: [
+              { name: "冬暖夏涼", detail: "因石板具有厚度，夏天可隔熱、冬天可保暖的特性。" },
+              { name: "會呼吸的房子", detail: "族人在室內生火煮食與取暖時的煙，能讓木頭防腐、防蟲，且煙會順著石板縫隙往外飄，因而得名。" }
+            ]
+          },
+          {
+            name: "半地下式住屋 (雅美/達悟族)",
+            desc: "因應蘭嶼（太平洋）常有颱風，依著山坡、面向大海往下挖掘出階梯狀地面所建的房屋。",
+            image: "<img src='a3.雅美達悟小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "地穴與排水設計", detail: "主屋建於低於地面 1~2 公尺的地穴以躲避強風侵襲，並設計有排水溝道防淹水。",
+                image: "<img src='a3.雅美達悟小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "涼臺 (發呆亭)", detail: "除了主屋，達悟族人還會搭建通風良好的「涼臺」，夏天在這裡吹海風、聊天、休息，非常涼爽舒適！",
+                image: "<img src='a5.達悟涼臺小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "泰雅族傳統住屋",
+            desc: "以木頭、竹子等材料建造的傳統住屋形式。",
+            image: "<img src='a4.泰雅族小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "竹木建材", detail: "泰雅族人常就地取材，利用山區豐富的桂竹和木材來搭建房屋，通風又舒適。",
+                image: "<img src='a4.泰雅族小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "防鼠板設計", detail: "為保護珍貴的小米等糧食，泰雅族的高架穀倉柱子上，常會裝設圓滑的木板，讓老鼠滑倒爬不上去喔！",
+                image: "<img src='a6.泰雅防鼠小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "卑南族少年會所", detail: "卑南族利用高架方式建造少年會所。約13、14歲男子會進入集中生活，學習傳統禮節與戰鬥技術。",
+                image: "<img src='a10.卑南少年會所小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "二、漢人住屋與三合院",
+        icon: "🧱",
+        color: "bg-orange-100 text-orange-800",
+        btnColor: "bg-orange-500 hover:bg-orange-600",
+        items: [
+          {
+            name: "漢人住屋特色",
+            desc: "受自然環境影響，漢人大多使用竹子、木頭或土石等天然建材，或使用人工燒製的磚瓦來建造房屋。",
+            image: "<img src='b1.漢人傳統住屋小.png' class='h-full w-full object-cover'>",
+            terms: [
+              { name: "就地取材", detail: "漢人同樣會利用周遭環境的資源來蓋房子喔！" },
+              { name: "土石建材", detail: "早期先民會將泥土混合稻稈做成「土磚」來砌牆，或是直接撿拾石頭堆疊成石牆，非常考驗蓋房子的技術呢！" }
+            ]
+          },
+          {
+            name: "早期常見天然材質",
+            desc: "在磚瓦普及前，先民利用身邊容易取得的自然材料發揮創意。",
+            image: "<img src='b2.竹管仔厝小.png' class='h-full w-full object-cover'>",
+            terms: [
+              { name: "竹管仔厝", detail: "一種用竹子當作建築骨架，外部再敷上泥土建造而成的房屋。" },
+              {
+                name: "土埆 (ㄑㄩㄝˋ) 厝", detail: "以石塊作基礎，將稻稈及泥土加水做成土磚層層錯落堆疊而成的房屋。優點是「冬暖夏涼」；缺點是「淹水時容易毀壞」，需在牆外塗石灰或覆蓋稻草來防水。",
+                image: "<img src='b3.土埆厝小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "人工燒製的建材",
+            desc: "除了天然建材，隨著技術進步或家境富裕，人們開始蓋更堅固的房子。",
+            image: "<img src='b4.磚瓦房小.png' class='h-full w-full object-cover'>",
+            terms: [
+              { name: "磚瓦", detail: "使用人工燒製的紅磚與屋瓦來建造房屋，比竹管或土埆厝更堅固耐用，能更好地抵擋臺灣多雨的氣候。" }
+            ]
+          },
+          {
+            name: "房屋形式的演進",
+            desc: "漢人的房屋會隨著家族人口的增加而「長大」喔！",
+            image: "<img src='b5.一條龍小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "一條龍", detail: "早期家中人口比較少時，興建的一種只有「正身」的房屋形式。",
+                image: "<img src='b5.一條龍小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "單伸手", detail: "配合家中人口逐漸增加，在正身上加上「單邊護龍」的建築形式。",
+                image: "<img src='b6.單伸手小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "三合院", detail: "隨著家中人口繼續增加，在正身加上「兩邊護龍」的建築形式；部分人口眾多或家境富裕的家族會直接興建此形式。",
+                image: "<img src='b7.三合院小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "四合院", detail: "中間有庭院，四面建房；當家族人口增加時會向左右擴建，展現重視家族團結的文化。代表地標如臺中市摘星山莊。",
+                image: "<img src='b8.四合院小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "防禦與環境適應", detail: "因當時社會治安不穩定，建屋會在牆上留有「槍孔」防禦敵人。屋頂呈斜坡狀，讓雨水順勢流入水池。",
+                image: "<img src='b9.防禦小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "三合院主體空間配置",
+            desc: "三合院的房間分配可是有長幼尊卑的學問呢！",
+            image: "<img src='c1.正廳小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "正廳", detail: "位於三合院正身中間，用來供奉神明和祖先牌位，也是祭拜與接待客人的地方。",
+                image: "<img src='c1.正廳小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "房間分配 (以左為尊)", detail: "傳統觀念中以人站在正廳前、面朝外來看，左邊的房子（左護龍/東廂）大於右邊的房子（右護龍/西廂）。",
+                image: "<img src='c2.左右護龍小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "護龍 / 橫屋", detail: "閩南人對三合院正身兩側房屋的稱呼為「護龍」；客家人則稱之為「橫屋」。",
+                image: "<img src='c3.護龍橫屋小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "三合院周遭環境",
+            desc: "三合院不僅是住家，周圍還結合了農業生活所需的功能。",
+            image: "<img src='c4.稻埕小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "稻埕", detail: "位於三合院前方的多用途場所，用來晒穀、孩童遊戲、乘涼聊天、彈唱戲曲、祭拜與請客等。",
+                image: "<img src='c4.稻埕小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "外側空間", detail: "人們常依生活需要在護龍外側添加農具間（放農耕用具）、牛棚（養牛）、雞舍或豬舍（飼養家禽家畜供食用或販售）。",
+                image: "<img src='c5.外側空間小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "果樹、竹林", detail: "供採水果、撿柴火，是編織與修理房屋的材料來源，竹林同時具有防風與防盜的功能。",
+                image: "<img src='c6.果樹竹林小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "水池", detail: "可供洗東西、養殖魚類，並在發生火災時用來滅火。",
+                image: "<img src='c7.水池小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "堆肥場", detail: "將枯枝落葉加上人禽糞尿做成堆肥，使土地變肥沃、有利農作生長的地方。",
+                image: "<img src='c8.堆肥場小.png' class='h-full w-full object-cover'>"
+              }
+
+            ]
+          },
+          {
+            name: "傳統市街與寺廟",
+            desc: "隨著社會穩定與商業發展，熱鬧地區開始出現獨特的建築。",
+            image: "<img src='c9.街屋小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "街屋", detail: "人們在熱鬧地區興建「狹長式商店住宅」，一樓為店鋪，二樓為住家。代表地標為臺北市剝皮寮歷史街區。",
+                image: "<img src='c9.街屋小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "寺廟", detail: "供奉家鄉神明，為居民的信仰中心，由具有工藝專長的漢人工匠建造雕刻與彩繪。代表地標為龍山寺。",
+                image: "<img src='c10.寺廟小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "三、適應氣候的智慧",
+        icon: "🌦️",
+        color: "bg-blue-100 text-blue-800",
+        btnColor: "bg-blue-500 hover:bg-blue-600",
+        desc: "臺灣的氣候特殊，先民發明了許多充滿智慧的建築設計。",
+        items: [
+          {
+            name: "騎樓 (因應多雨炎熱)",
+            desc: "為了解決日晒與頻繁降雨的問題，發展出能遮風避雨的通道。",
+            image: "<img src='d1.騎樓小.png' class='h-full w-full object-cover'>",
+            terms: [
+              { name: "騎樓設計", detail: "臺灣早期老街與雲林許多房屋在一樓的設計，讓民眾可通行購物，是為了適應臺灣『多雨炎熱』氣候的智慧。" }
+            ]
+          },
+          {
+            name: "地下屋 (因應颱風)",
+            desc: "為了適應強風環境，將房屋主體往下發展的特殊建築形式。",
+            image: "<img src='d2.地下屋小.png' class='h-full w-full object-cover'>",
+            terms: [
+              { name: "地下屋設計", detail: "蘭嶼野銀舊部落早期的傳統建築，為適應當地『颱風』氣候環境而將主屋建於地穴。" }
+            ]
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: "四、住屋的變遷與保存",
+        icon: "🛡️",
+        color: "bg-purple-100 text-purple-800",
+        btnColor: "bg-purple-500 hover:bg-purple-600",
+        items: [
+          {
+            name: "現代化的轉變",
+            desc: "隨著時代進步，我們的居住環境也發生了很大的變化。",
+            image: "<img src='e1.現代城市小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "改變的原因", detail: "主要包含：1. 工商業的發展 2. 生活方式的轉變 3. 建築材料的革新。",
+                image: "<img src='e1.現代城市小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "樓房 / 鋼筋混凝土", detail: "許多傳統住屋拆除後所改建的現代建築形式，主要使用鋼筋混凝土作為建材。",
+                image: "<img src='e2.鋼筋水泥小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "日治時期建築：現代化與文化共存",
+            desc: "政府主導興建公共建築，民間也出現融合多種風格的洋樓。",
+            image: "<img src='e6.日治建築小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "西式公共建築", detail: "因臺灣位在地震帶且氣候炎熱多雨，引進鋼筋、水泥、新式紅磚等建材，以提升耐震與防火功能，並注重通風與採光。",
+                image: "<img src='e6.日治建築小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "紅磚技術", detail: "最早由荷蘭人引進，到了日治時期改以機器統一規格製磚。",
+                image: "<img src='e7.紅磚技術小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "融合式洋樓", detail: "民間建築融合在地、日式與西式風格。結合了漢人三合院、日式榻榻米、西式圓柱與拱廊。",
+                image: "<img src='e8.融合式洋樓小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "老屋新生命",
+            desc: "有些傳統房屋雖然不當作一般住家了，但有了新的任務喔！",
+            image: "<img src='e3.老屋新生命小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "特色餐廳", detail: "少數留存的傳統住屋所轉型的用途（例如將三合院改建為咖啡廳），用於吸引遊客前往體驗傳統生活。",
+                image: "<img src='e3.老屋新生命小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "特色民宿", detail: "將傳統的三合院或石板屋重新整理，讓遊客可以實際住進去，親自動手體驗先民早期的生活方式與建築之美！",
+                image: "<img src='e4.石板屋民宿小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "展覽館或藝文空間", detail: "多數歷史建築（傳統建築與洋樓）經修復後，轉型為展覽館或藝文空間，延續空間生命力。",
+                image: "<img src='e5.藝文空間小.png' class='h-full w-full object-cover'>"
+              },
+            ]
+          },
+          {
+            name: "保存文化資產",
+            desc: "保護老建築，就是保護我們先民的智慧結晶。",
+            image: "<img src='f1.維護傳統住屋小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "維護再生", detail: "為保存先民的智慧結晶，由政府和民間積極推動，為老建築找到新生命。",
+                image: "<img src='f1.維護傳統住屋小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "保護形式", detail: "將具有價值的建築列為「古蹟」，規畫為「聚落保存區」，或結合當地特色成為觀光景點。",
+                image: "<img src='f2.古蹟小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "文化資產", detail: "人類聚居的村落稱為『聚落』；具文化價值的聚落若經指定或登錄，即受法律保護成為『國家文化資產』。",
+                image: "<img src='f3.聚落小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "聚落內涵", detail: "不僅是維修硬體建築，還包含維護當地的社會文化與生活模式（例如歌謠、諺語等無形文化），以及與傳統產業相關的器物。",
+                image: "<img src='f4.傳統文化小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          },
+          {
+            name: "維護實例",
+            desc: "臺灣各地都有許多成功保存下來的美麗聚落喔！一起來認識它們。",
+            image: "<img src='f5.七佳部落小.png' class='h-full w-full object-cover'>",
+            terms: [
+              {
+                name: "屏東縣 七佳部落", detail: "春日鄉排灣族聚落，是保存完整的石板屋聚落。",
+                image: "<img src='f5.七佳部落小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "苗栗縣 蘆竹湳聚落", detail: "位於頭份市，由當地居民積極維護的三合院聚落。",
+                image: "<img src='f6.蘆竹湳小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "澎湖縣 二崁村", detail: "位於西嶼鄉，清帝國時期成形的閩南式漢人街庄，被選定為文化聚落保存區。",
+                image: "<img src='f7.二崁村小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "澎湖縣 望安花宅聚落", detail: "位於望安鄉中社村，是全國第一個被登錄為「重要聚落」的地方！",
+                image: "<img src='f8.望安花宅小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "新北市 蘆洲李宅", detail: "這是一座保存非常完整的傳統漢人大型合院，現在不但開放參觀，還是許多小寶寶舉辦「抓周」活動的熱門地點喔！",
+                image: "<img src='f9.蘆洲李宅小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "嘉義市 檜意森活村", detail: "除了原住民與漢人住屋，臺灣也保留了許多日治時期的日式木造建築。這裡是全臺最大的日式建築群，現在變成了充滿特色的文化園區！",
+                image: "<img src='f10.檜意森活村小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "新北市 板橋林家花園", detail: "臺灣目前保存最完整的傳統園林建築！除了華麗的房屋，還有美麗的庭園、假山和涼亭，可以看見早期富裕人家充滿藝術感的生活樣貌喔。",
+                image: "<img src='f11.林家花園小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "馬祖 芹壁聚落", detail: "位於北竿鄉，是馬祖保存最完整的「閩東式」建築聚落。這裡的房屋是用花崗岩或大理石蓋成的石頭屋，外牆像亂石堆疊，非常有特色，甚至被稱為「馬祖的地中海」喔！",
+                image: "<img src='f12.芹壁聚落小.png' class='h-full w-full object-cover'>"
+              },
+              {
+                name: "金門 山後民俗文化村", detail: "這裡是金門最具代表性的閩南建築群，由18棟整齊劃一的大厝組成，又稱為「山後十八間」。整齊的紅磚牆、石板路與精緻的燕尾脊，展現了最經典的古厝之美！",
+                image: "<img src='f13.山後文化村小.png' class='h-full w-full object-cover'>"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 5,
+        title: "五、隨堂小測驗",
+        icon: "📝",
+        color: "bg-teal-100 text-teal-800",
+        btnColor: "bg-teal-500 hover:bg-teal-600",
+        isQuiz: true // 標記這是一個測驗頁面
+      }
+    ];
+
+    // --- 測驗題庫 (50題) ---
+    const questionBank = [
+      { q: "排灣族和魯凱族傳統住屋主要使用什麼建材？", options: ["木頭", "竹子", "茅草"], answer: "石板" },
+      { q: "哪一種原住民房屋因為煙會順著縫隙往外飄，被稱為「會呼吸的房子」？", options: ["竹管仔厝", "半地下式住屋", "高架穀倉"], answer: "石板屋" },
+      { q: "石板屋具備什麼樣的特性？", options: ["容易淹水", "冬冷夏熱", "容易被吹垮"], answer: "冬暖夏涼" },
+      { q: "雅美(達悟)族因應蘭嶼環境，發展出什麼樣的特殊建築？", options: ["高架屋", "土埆厝", "石板屋"], answer: "半地下式住屋" },
+      { q: "達悟族的半地下式住屋主要是為了防範哪種自然災害？", options: ["地震", "水災", "旱災"], answer: "颱風" },
+      { q: "達悟族人夏天喜歡在哪裡吹海風、聊天休息？", options: ["主屋", "工作房", "稻埕"], answer: "涼臺" },
+      { q: "達悟族半地下式住屋的主屋，通常建於低於地面多少公尺的地穴？", options: ["3~4 公尺", "5~6 公尺", "與地面齊平"], answer: "1~2 公尺" },
+      { q: "泰雅族傳統住屋主要利用山區豐富的什麼材料搭建？", options: ["紅磚與屋瓦", "石板與泥土", "鋼筋與水泥"], answer: "桂竹與木材" },
+      { q: "泰雅族高架穀倉柱子上的「圓形木板」設計目的是什麼？", options: ["裝飾用", "支撐房屋", "防止房屋漏水"], answer: "保護珍貴的小米不被老鼠吃掉" },
+      { q: "漢人早期蓋房子時，會將泥土混合什麼做成「土磚」？", options: ["樹葉", "石頭", "貝殼"], answer: "稻稈" },
+      { q: "以竹子當建築骨架，外部再敷上泥土建造而成的房屋稱為什麼？", options: ["土埆厝", "石板屋", "磚瓦房"], answer: "竹管仔厝" },
+      { q: "土埆厝的缺點是什麼？", options: ["冬冷夏熱", "建造費用昂貴", "容易引來老鼠"], answer: "淹水時容易毀壞" },
+      { q: "人工燒製的磚瓦房比起天然建材有什麼優點？", options: ["比較便宜", "冬暖夏涼", "方便移動"], answer: "更堅固耐用，能抵擋多雨氣候" },
+      { q: "漢人房屋中，早期家中人口較少時興建，只有「正身」的房屋形式稱為什麼？", options: ["單伸手", "三合院", "四合院"], answer: "一條龍" },
+      { q: "配合人口增加，在正身上加上「單邊護龍」的建築形式稱為什麼？", options: ["一條龍", "三合院", "多層樓房"], answer: "單伸手" },
+      { q: "在正身加上「兩邊護龍」的建築形式稱為什麼？", options: ["一條龍", "單伸手", "透天厝"], answer: "三合院" },
+      { q: "三合院中，用來供奉神明和祖先牌位，也是接待客人的地方稱為什麼？", options: ["左護龍", "右護龍", "稻埕"], answer: "正廳" },
+      { q: "傳統三合院房間分配有尊卑之分，以人站在正廳面朝外來看，哪一邊較大？", options: ["右邊", "兩邊一樣大", "不一定"], answer: "左邊" },
+      { q: "閩南人對三合院正身兩側房屋稱呼為「護龍」，客家人則稱呼為什麼？", options: ["廂房", "偏房", "側屋"], answer: "橫屋" },
+      { q: "三合院前方的多用途場所，用來晒穀、孩童遊戲、祭拜的地方稱為什麼？", options: ["水池", "堆肥場", "外側空間"], answer: "稻埕" },
+      { q: "人們常在護龍外側添加什麼空間來飼養家禽家畜？", options: ["正廳", "涼臺", "客房"], answer: "雞舍或豬舍" },
+      { q: "三合院周圍種植竹林，除了作為編織材料，還有什麼功能？", options: ["遮蔽陽光", "增加美觀", "吸收雨水"], answer: "防風與防盜" },
+      { q: "三合院的水池除了洗東西與養殖魚類，還有什麼重要功能？", options: ["用來飲用", "用來游泳", "用來灌溉"], answer: "發生火災時用來滅火" },
+      { q: "將枯枝落葉加上人禽糞尿做成，能使土地變肥沃的地方是哪裡？", options: ["水池", "果樹林", "稻埕"], answer: "堆肥場" },
+      { q: "臺灣早期老街為了解決日晒與頻繁降雨，發展出什麼通道設計？", options: ["地下道", "天橋", "涼亭"], answer: "騎樓" },
+      { q: "蘭嶼野銀舊部落的地下屋，是為了適應哪一種特殊的氣候環境？", options: ["梅雨", "寒流", "地震"], answer: "颱風" },
+      { q: "現代居住環境改變的主要原因「不包含」下列何者？", options: ["工商業發展", "生活方式轉變", "建築材料革新"], answer: "人口大量減少" },
+      { q: "許多傳統住屋拆除後改建的現代樓房，主要使用什麼作為建材？", options: ["木頭與竹子", "石板與茅草", "泥土與稻稈"], answer: "鋼筋混凝土" },
+      { q: "現在有些三合院或石板屋轉型成什麼用途，讓遊客可以體驗先民生活？", options: ["便利商店", "現代化工廠", "高樓大廈"], answer: "特色民宿" },
+      { q: "人類聚居的村落稱為什麼？", options: ["都市", "社區", "特區"], answer: "聚落" },
+      { q: "具文化價值的聚落若經指定或登錄，即受法律保護成為什麼？", options: ["世界遺產", "私人財產", "自然保留區"], answer: "國家文化資產" },
+      { q: "聚落的內涵除了硬體建築，還包含什麼？", options: ["高科技產品", "現代交通工具", "外來飲食文化"], answer: "社會文化與生活模式" },
+      { q: "保存完整的「石板屋」聚落，位於屏東縣春日鄉的是哪一個部落？", options: ["野銀部落", "司馬庫斯", "好茶部落"], answer: "七佳部落" },
+      { q: "位於苗栗縣頭份市，由當地居民積極維護的「三合院」聚落是哪裡？", options: ["二崁村", "望安花宅", "芹壁聚落"], answer: "蘆竹湳聚落" },
+      { q: "位於澎湖縣，清帝國時期成形的「閩南式」漢人街庄是哪裡？", options: ["蘆竹湳聚落", "七佳部落", "芹壁聚落"], answer: "二崁村" },
+      { q: "全國「第一個」被登錄為「重要聚落」的地方在哪裡？", options: ["嘉義檜意森活村", "馬祖芹壁聚落", "金門山後文化村"], answer: "澎湖望安花宅" },
+      { q: "保存完整的傳統漢人大型合院，現在是許多小寶寶舉辦「抓周」熱門地點是哪裡？", options: ["板橋林家花園", "蘆竹湳聚落", "二崁村"], answer: "新北蘆洲李宅" },
+      { q: "全臺最大的「日式木造建築群」，現在變成特色文化園區的是哪裡？", options: ["蘆洲李宅", "板橋林家花園", "山後民俗文化村"], answer: "嘉義檜意森活村" },
+      { q: "臺灣目前保存最完整的「傳統園林建築」，可以看見早期富裕人家充滿藝術感的生活樣貌是哪裡？", options: ["檜意森活村", "蘆洲李宅", "二崁村"], answer: "板橋林家花園" },
+      { q: "被稱為「馬祖的地中海」，房屋是用花崗岩或大理石蓋成的石頭屋聚落是哪裡？", options: ["二崁村", "望安花宅", "七佳部落"], answer: "芹壁聚落" },
+      { q: "金門最具代表性的閩南建築群，由18棟大厝組成，又稱「山後十八間」的是哪裡？", options: ["芹壁聚落", "二崁村", "望安花宅"], answer: "山後民俗文化村" },
+      { q: "原住民住屋「就地取材」的特色，代表他們懂得運用什麼？", options: ["現代科技", "進口材料", "人工化學物"], answer: "大自然的智慧" },
+      { q: "泰雅族傳統住屋的特色是什麼？", options: ["屋頂很高", "建在水面上", "全部用石頭砌成"], answer: "通風又舒適" },
+      { q: "土埆厝為了防水，通常會在牆外塗什麼或覆蓋稻草？", options: ["油漆", "水泥", "樹脂"], answer: "石灰" },
+      { q: "漢人的房屋演進形式，通常是隨著什麼而「長大」？", options: ["天氣變熱", "土地變大", "政府規定"], answer: "家族人口增加" },
+      { q: "三合院的「右護龍」在傳統尊卑觀念中，地位與「左護龍」相比如何？", options: ["較高", "地位一樣", "不一定"], answer: "較低" },
+      { q: "為了適應多雨炎熱氣候，臺灣早期房屋發展出了什麼設計？", options: ["煙囪", "地下室", "天窗"], answer: "騎樓" },
+      { q: "老屋轉型為「特色餐廳」或「特色民宿」的主要目的是什麼？", options: ["為了賺大錢", "為了取代現代建築", "因為沒有人要住"], answer: "吸引遊客體驗傳統生活" },
+      { q: "將具有價值的建築列為「古蹟」，是為了保存什麼？", options: ["土地資源", "現代科技", "個人財富"], answer: "先民的智慧結晶" },
+      { q: "金門「山後民俗文化村」的建築除了整齊的紅磚牆，還有什麼精緻的特色？", options: ["玻璃帷幕", "羅馬圓柱", "防鼠板"], answer: "燕尾脊" },
+      // --- 以下為額外補充的 20 題 ---
+      { q: "干欄式住屋將房屋底座架高，除了可以防止淹水，還能防範什麼的侵擾？", options: ["寒冬的冷風", "夏季的颱風", "沙塵暴"], answer: "野生動物" },
+      { q: "早期原住民常用「茅草」作為屋頂建材，主要是因為茅草具備什麼特性？", options: ["顏色鮮豔好看", "重量很重能防風", "燃燒時會散發香氣"], answer: "取得容易且具防水性" },
+      { q: "史前人類的哪一個遺址出土了許多「柱洞」遺跡，推測當時已建造干欄式住屋？", options: ["長濱遺址", "圓山遺址", "卑南遺址"], answer: "十三行遺址" },
+      { q: "達悟族的半地下式住屋，通常是依著什麼地形往下挖掘出階梯狀地面？", options: ["沙灘", "平原", "火山口"], answer: "山坡" },
+      { q: "卑南族大約在13、14歲的男子，會進入「少年會所」集中生活，主要是為了學習什麼？", options: ["農業與編織技術", "商業與貿易規則", "航海與捕魚技巧"], answer: "傳統禮節與戰鬥技術" },
+      { q: "早期漢人先民蓋房子時，除了將泥土混合稻稈做成土磚，還會撿拾什麼天然材料堆疊成牆？", options: ["貝殼", "樹葉", "動物骨頭"], answer: "石頭" },
+      { q: "漢人傳統住屋的屋頂經常呈現斜坡狀，主要目的是為了什麼？", options: ["防止積雪壓垮屋頂", "讓房子看起來更高大", "節省建築材料"], answer: "讓雨水順勢流入水池" },
+      { q: "早期社會治安不穩定時，漢人建屋會在哪個地方留有「槍孔」來防禦敵人？", options: ["屋頂上", "地板下", "大門外"], answer: "牆上" },
+      { q: "三合院前方的「稻埕」，除了用來晒穀和祭拜，還是早期人們從事什麼休閒活動的地方？", options: ["賽馬與射箭", "游泳與釣魚", "種植蔬菜"], answer: "乘涼聊天、彈唱戲曲" },
+      { q: "漢人通常會將農具間、牛棚、豬舍等設施，添加在三合院的哪個位置？", options: ["正廳的正後方", "稻埕的正中央", "神明桌的旁邊"], answer: "護龍的外側" },
+      { q: "早期人們在熱鬧地區興建的「狹長式商店住宅」，一樓為店鋪、二樓為住家，這稱為什麼？", options: ["土埆厝", "透天厝", "公寓"], answer: "街屋" },
+      { q: "傳統聚落中的寺廟，通常是由具有工藝專長的什麼人來建造雕刻與彩繪？", options: ["政府官員", "外國傳教士", "當地農夫"], answer: "漢人工匠" },
+      { q: "日治時期引進鋼筋、水泥等建材興建公共建築，主要是為了提升建築的什麼功能？", options: ["保暖與防潮", "美觀與隔音", "節能與減碳"], answer: "耐震與防火" },
+      { q: "臺灣的「紅磚技術」最早是由哪一個外來政權引進的？", options: ["西班牙人", "日本人", "清朝政府"], answer: "荷蘭人" },
+      { q: "日治時期，紅磚的製作方式有了什麼重大的改變？", options: ["改由人工一塊塊捏製", "從國外大量進口", "只用泥土混合稻草"], answer: "改以機器統一規格製磚" },
+      { q: "多數的歷史建築在經過修復後，為了延續空間生命力，通常會轉型成什麼用途？", options: ["現代百貨公司", "政府辦公大樓", "大型醫院"], answer: "展覽館或藝文空間" },
+      { q: "保存聚落不僅是維修硬體建築，還包含維護當地的什麼無形文化？", options: ["高科技產品", "交通建設", "外來飲食"], answer: "歌謠與諺語" },
+      { q: "位於苗栗縣頭份市的「蘆竹湳聚落」，主要是由誰來積極維護這些三合院？", options: ["外國遊客", "中央政府", "私人企業"], answer: "當地居民" },
+      { q: "澎湖縣的「二崁村」是哪一個時期成形的閩南式漢人街庄？", options: ["荷西時期", "日治時期", "戰後時期"], answer: "清帝國時期" },
+      { q: "金門的「山後民俗文化村」是由幾棟整齊劃一的大厝所組成的閩南建築群？", options: ["8棟", "10棟", "36棟"], answer: "18棟" }
+    ];
+
+    // --- 測驗狀態管理 ---
+    let currentQuizList = [];
+    let currentQIndex = 0;
+    let currentScore = 0;
+
+    // 洗牌工具函數
+    function shuffleArray(array) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+
+    // --- 網頁邏輯與狀態管理 ---
+    let activeTabId = lessonData[0].id;
+
+    function renderTabs() {
+      const tabsContainer = document.getElementById('tabs-container');
+      tabsContainer.innerHTML = lessonData.map(lesson => {
+        // 只取頓號後面的標題文字
+        const shortTitle = lesson.title.split('、')[1] || lesson.title;
+        const isActive = activeTabId === lesson.id;
+        const btnClasses = isActive
+          ? `${lesson.btnColor} text-white shadow-lg transform scale-105`
+          : 'bg-white text-gray-600 hover:bg-amber-100';
+
+        return `
+          <button
+            onclick="changeTab(${lesson.id})"
+            class="px-4 py-3 rounded-full font-bold text-sm md:text-base transition-all duration-300 shadow-sm flex items-center gap-2 ${btnClasses}"
+          >
+            <span class="text-xl">${lesson.icon}</span>
+            ${shortTitle}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function changeTab(id) {
+      activeTabId = id;
+      renderTabs();
+      renderContent();
+      // 切換標籤時畫面回到頂部
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderContent() {
+      const currentData = lessonData.find(d => d.id === activeTabId);
+      const wrapper = document.getElementById('content-wrapper');
+
+      // 更新外框顏色
+      wrapper.className = `rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-500 ${currentData.color} bg-opacity-30 bg-white relative`;
+
+      // 判斷是否為測驗頁面
+      if (currentData.isQuiz) {
+        // ✨ 加入下面這行，強制將測驗區塊的背景設為純白 (bg-white)
+        wrapper.className = 'rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-500 bg-white relative';
+
+        wrapper.innerHTML = `
+          <div class="text-center py-12 animate-fade-in">
+             <div class="text-7xl mb-6">📝</div>
+             <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">傳統住屋大挑戰</h2>
+             <button onclick="startQuiz()" class="${currentData.btnColor} text-white px-10 py-4 rounded-full text-2xl font-bold shadow-lg hover:scale-110 transition-transform">
+               ▶️ 開始測驗
+             </button>
+          </div>
+        `;
+        return; // 提早結束，不執行下方一般文章內容的渲染
+      }
+
+      let contentHTML = `
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 flex items-center gap-3 border-b-2 border-current pb-3">
+          <span class="text-3xl">${currentData.icon}</span>
+          ${currentData.title}
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      `;
+
+      currentData.items.forEach((item, index) => {
+        const imgBoxId = `card-img-${index}`;
+
+        let termsHTML = '';
+        if (item.terms && item.terms.length > 0) {
+          const buttonsHTML = item.terms.map((term, termIndex) => `
+            <button
+              onclick="showTermDetail(${currentData.id}, ${index}, ${termIndex})"
+              class="${currentData.btnColor} text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm hover:scale-105 transition-transform"
+            >
+              ${term.name}
+            </button>
+          `).join('');
+
+          termsHTML = `
+            <div class="mt-auto pt-4">
+              <p class="text-sm font-semibold text-gray-500 mb-2">💡 點擊名詞看解釋：</p>
+              <div class="flex flex-wrap gap-2">
+                ${buttonsHTML}
+              </div>
+            </div>
+          `;
+        }
+
+        contentHTML += `
+          <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+            <div id="${imgBoxId}" class="bg-gray-200 aspect-[3/2] w-full flex items-center justify-center text-gray-500 italic overflow-hidden text-center border-b border-gray-100 shrink-0 transition-all duration-300">
+              ${item.image || '🖼️ 預設圖片放置區'}
+            </div>
+            
+            <div class="p-5 flex-1 flex flex-col">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">${item.name}</h3>
+              <p class="text-gray-600 mb-4">${item.desc}</p>
+              
+            <div id="local-info-${index}" class="hidden mb-4 p-4 rounded-lg bg-gray-50 border-l-4 transition-all duration-300 animate-fade-in">
+                <h4 id="local-title-${index}" class="font-bold text-lg mb-1"></h4>
+                <p id="local-detail-${index}" class="text-gray-700 mb-2"></p>
+                <div id="local-keywords-${index}" class="flex flex-wrap gap-1 mt-2"></div>
+              </div>
+
+              ${termsHTML}
+            </div>
+          </div>
+        `;
+      });
+
+      contentHTML += `</div>`;
+      wrapper.innerHTML = contentHTML;
+    }
+
+    function showTermDetail(lessonId, itemIndex, termIndex) {
+      const currentData = lessonData.find(d => d.id === lessonId);
+      const item = currentData.items[itemIndex];
+      const term = item.terms[termIndex];
+
+      const title = term.name;
+      const detail = term.detail;
+      const textColorClass = currentData.color.split(' ').find(c => c.startsWith('text-'));
+      const borderColorClass = currentData.btnColor.split(' ').find(c => c.startsWith('bg-')).replace('bg-', 'border-');
+
+      const targetImgId = `card-img-${itemIndex}`;
+      const newImageHTML = term.image || item.image || '🖼️ 相關圖片';
+
+      // 抓取被點擊的那張卡片內部的專屬對話框與元件
+      const localInfoBox = document.getElementById(`local-info-${itemIndex}`);
+      const localInfoTitle = document.getElementById(`local-title-${itemIndex}`);
+      const localInfoDetail = document.getElementById(`local-detail-${itemIndex}`);
+      const localKeywords = document.getElementById(`local-keywords-${itemIndex}`);
+
+      if (localInfoBox) {
+        localInfoTitle.textContent = title;
+        localInfoTitle.className = `font-bold text-lg mb-1 ${textColorClass}`;
+        localInfoDetail.textContent = detail;
+
+        // 顯示手動設定的關鍵字
+        if (term.keywords && term.keywords.length > 0) {
+          localKeywords.innerHTML = term.keywords.map(kw =>
+            `<span class="inline-block bg-gray-200 text-gray-600 rounded-full px-2.5 py-1 text-xs font-medium tracking-wide">#${kw}</span>`
+          ).join('');
+        } else {
+          localKeywords.innerHTML = '';
+        }
+
+        localInfoBox.className = `mb-4 p-4 rounded-lg bg-gray-50 border-l-4 ${borderColorClass} transition-all duration-300 animate-fade-in block`;
+      }
+
+      // 圖片替換邏輯
+      const imgContainer = document.getElementById(targetImgId);
+      if (imgContainer) {
+        const getSrc = (htmlString) => {
+          const match = htmlString.match(/src=['"]([^'"]+)['"]/);
+          return match ? match[1] : htmlString.trim();
+        };
+
+        const currentSrc = getSrc(imgContainer.innerHTML);
+        const newSrc = getSrc(newImageHTML);
+
+        if (currentSrc !== newSrc) {
+          imgContainer.style.opacity = '0';
+          setTimeout(() => {
+            imgContainer.innerHTML = newImageHTML;
+            imgContainer.style.opacity = '1';
+          }, 150);
+        }
+      }
+    }
+
+    // 初始化渲染
+    renderTabs();
+    renderContent();
+
+    // 開始測驗
+    function startQuiz() {
+      currentQuizList = shuffleArray(questionBank).slice(0, 10);
+      currentQIndex = 0;
+      currentScore = 0;
+      renderQuizQuestion();
+    }
+
+    // 渲染單一題目
+    function renderQuizQuestion() {
+      const wrapper = document.getElementById('content-wrapper');
+
+      // 測驗結束，顯示成績
+      if (currentQIndex >= currentQuizList.length) {
+        wrapper.innerHTML = `
+          <div class="text-center py-12 animate-fade-in">
+            <h2 class="text-4xl font-bold mb-4 text-teal-700">🎉 測驗完成！</h2>
+            <p class="text-2xl mb-8 font-semibold text-gray-700">你的成績是： <span class="text-5xl text-red-500">${currentScore * 10}</span> 分</p>
+            <p class="text-lg text-gray-600 mb-8">（答對了 ${currentScore} / 10 題）</p>
+            <button onclick="changeTab(5)" class="bg-teal-500 hover:bg-teal-600 text-white px-8 py-3 rounded-full text-xl font-bold shadow-md hover:scale-105 transition-transform">
+              再挑戰一次 🔄
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // 取得當前題目並混淆選項
+      const q = currentQuizList[currentQIndex];
+      let optionsData = q.options.map(opt => ({ text: opt, isCorrect: false }));
+      optionsData.push({ text: q.answer, isCorrect: true });
+      optionsData = shuffleArray(optionsData);
+
+      let optionsHTML = optionsData.map((opt, idx) => `
+        <button 
+          onclick="checkAnswer(this, ${opt.isCorrect})" 
+          class="quiz-option w-full h-full min-h-[80px] text-left p-4 rounded-xl border-2 border-teal-200 hover:bg-teal-50 hover:border-teal-400 text-lg md:text-xl font-medium text-gray-700 transition-all shadow-sm flex items-center"
+        >
+          ${idx + 1}. ${opt.text}
+        </button>
+      `).join('');
+
+      wrapper.innerHTML = `
+        <div class="max-w-3xl mx-auto animate-fade-in relative pb-16">
+          <div class="flex justify-between items-center mb-6 border-b-2 border-teal-100 pb-3">
+             <span class="text-teal-600 font-bold text-lg">第 ${currentQIndex + 1} / 10 題</span>
+             <span class="text-orange-500 font-bold text-lg">目前得分：${currentScore * 10}</span>
+          </div>
+          <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 leading-relaxed">
+            Q: ${q.q}
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="options-container">
+            ${optionsHTML}
+          </div>
+          
+          <div id="next-btn-container" class="hidden absolute -bottom-4 right-0 mt-8">
+             <button onclick="nextQuestion()" class="bg-teal-600 text-white px-8 py-3 rounded-xl text-xl font-bold shadow-lg hover:bg-teal-700 transition-all flex items-center gap-2">
+               下一題 ➡️
+             </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 檢查答案
+    function checkAnswer(btnElement, isCorrect) {
+      const allButtons = document.querySelectorAll('.quiz-option');
+      allButtons.forEach(btn => btn.onclick = null);
+
+      if (isCorrect) {
+        btnElement.classList.add('bg-green-100', 'border-green-500', 'text-green-800', 'scale-[1.02]');
+        btnElement.innerHTML += ' ✅';
+        currentScore++;
+      } else {
+        btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+        btnElement.innerHTML += ' ❌';
+
+        const correctText = currentQuizList[currentQIndex].answer;
+        allButtons.forEach(btn => {
+          if (btn.innerText.includes(correctText)) {
+            btn.classList.add('bg-green-50', 'border-green-400', 'text-green-700');
+            btn.innerHTML += ' 💡 (正確答案)';
+          }
+        });
+      }
+
+      document.getElementById('next-btn-container').classList.remove('hidden');
+    }
+
+    // 進入下一題
+    function nextQuestion() {
+      currentQIndex++;
+      renderQuizQuestion();
+    }
+  </script>
+</body>
+
+</html>
